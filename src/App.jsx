@@ -1,17 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import ScoreCard from './components/ScoreCard'
+import { filterMatches, normalizeMatches } from './utils/matchUtils'
 import './App.css'
 
 const API_URL = 'https://api.cricapi.com/v1/currentMatches'
 const FALLBACK_API_KEY = '15f90bd8-beca-4786-ac34-912da888acd9'
 const API_KEY = import.meta.env.VITE_CRICAPI_KEY || FALLBACK_API_KEY
 const THEME_STORAGE_KEY = 'cricket-score-theme'
+const REFRESH_INTERVAL_MS = 60000
 
 function App() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const [showSearchFilters, setShowSearchFilters] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [typeFilter, setTypeFilter] = useState('all')
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') {
       return 'light'
@@ -25,9 +32,14 @@ function App() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })
 
-  const getData = useCallback(async () => {
+  const getData = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true)
+      if (silent) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
+
       setError('')
 
       const response = await axios.get(API_URL, {
@@ -43,17 +55,32 @@ function App() {
         throw new Error('Invalid response from score API')
       }
 
-      setData(matches)
+      setData(normalizeMatches(matches))
     } catch {
       setError('Unable to fetch live scores right now. Please try again.')
-      setData([])
+      if (!silent) {
+        setData([])
+      }
     } finally {
-      setLoading(false)
+      setRefreshing(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
     getData()
+  }, [getData])
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      getData({ silent: true })
+    }, REFRESH_INTERVAL_MS)
+
+    return () => {
+      window.clearInterval(interval)
+    }
   }, [getData])
 
   useEffect(() => {
@@ -65,20 +92,95 @@ function App() {
     setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'))
   }
 
+  const toggleSearchFilters = () => {
+    setShowSearchFilters((currentState) => !currentState)
+  }
+
+  const availableTypes = useMemo(() => {
+    return Array.from(new Set(data.map((match) => match.matchType).filter(Boolean)))
+  }, [data])
+
+  const filteredData = useMemo(() => {
+    return filterMatches(data, {
+      searchTerm,
+      statusFilter,
+      typeFilter,
+    })
+  }, [data, searchTerm, statusFilter, typeFilter])
+
   return (
     <div className={`app-shell ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
       <div className='app-header'>
         <h1 className='app-title'>Live Cricket Score</h1>
-        <button
-          type='button'
-          className='theme-toggle'
-          onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-        >
-          {theme === 'dark' ? '☀' : '🌙'}
-        </button>
+        <div className='header-actions'>
+          <button
+            type='button'
+            className={`search-toggle ${showSearchFilters ? 'is-active' : ''}`}
+            onClick={toggleSearchFilters}
+            aria-label={showSearchFilters ? 'Hide search filters' : 'Show search filters'}
+            title={showSearchFilters ? 'Hide search filters' : 'Show search filters'}
+          >
+            <span className='search-toggle-icon' aria-hidden='true'>⌕</span>
+            <span className='search-toggle-text'>Search</span>
+          </button>
+          <button
+            type='button'
+            className='theme-toggle'
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
+            {theme === 'dark' ? '☀' : '🌙'}
+          </button>
+        </div>
       </div>
+
+      {showSearchFilters && (
+        <div className='controls-wrap'>
+          <div className='filters-row'>
+            <input
+              type='text'
+              className='search-input'
+              placeholder='Search by team or match'
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+
+            <select
+              className='select-input'
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value='all'>All Status</option>
+              <option value='live'>Live</option>
+              <option value='completed'>Completed</option>
+              <option value='upcoming'>Upcoming</option>
+            </select>
+
+            <select
+              className='select-input'
+              value={typeFilter}
+              onChange={(event) => setTypeFilter(event.target.value)}
+            >
+              <option value='all'>All Formats</option>
+              {availableTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type.toUpperCase()}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type='button'
+              className='refresh-button'
+              onClick={() => getData({ silent: true })}
+              disabled={refreshing}
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading && (
         <div className='status-card'>Loading live matches...</div>
@@ -97,12 +199,17 @@ function App() {
         <div className='status-card'>No live matches available at the moment.</div>
       )}
 
-      {!loading && !error && data.length > 0 && (
+      {!loading && !error && data.length > 0 && filteredData.length === 0 && (
+        <div className='status-card'>No matches found for the current filters.</div>
+      )}
+
+      {!loading && !error && filteredData.length > 0 && (
         <div className='match-grid'>
-          {data.map((match) => (
+          {filteredData.map((match) => (
             <ScoreCard
               key={match.id}
               name={match.name}
+              matchType={match.matchType}
               status={match.status}
               date={match.date}
               teams={match.teams}

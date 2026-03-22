@@ -1,8 +1,12 @@
 import React from 'react'
 import Score from './Score';
 
-function ScoreCard({ name, status, date, teams, score }) {
+function ScoreCard({ name, matchType, status, date, teams, score }) {
   const safeScores = Array.isArray(score) ? score : []
+  const normalizedMatchType = String(matchType || '').toLowerCase()
+  const isMultiInningsFormat = ['test', 'firstclass', 'first-class', 'fc'].includes(normalizedMatchType)
+  const showInningLabel = isMultiInningsFormat
+
   const teamsLabel = Array.isArray(teams) && teams.length > 0 ? teams.join(' vs ') : 'Teams not available'
 
   return (
@@ -17,7 +21,14 @@ function ScoreCard({ name, status, date, teams, score }) {
         <div className='score-list'>
           {safeScores.length > 0 ? (
             safeScores.map((sc, idx) => (
-              <Score key={`${sc?.inning || 'inning'}-${idx}`} score={sc} />
+              <Score
+                key={`${sc?.inning || 'inning'}-${idx}`}
+                score={sc}
+                allScores={safeScores}
+                teams={teams}
+                scoreIndex={idx}
+                showInningLabel={showInningLabel}
+              />
             ))
           ) : (
             <div className='score-row'>Score unavailable</div>
