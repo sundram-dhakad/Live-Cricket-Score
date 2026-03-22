@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
-body{
-  background-color: black;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Trebuchet MS", "Lucida Sans", sans-serif;
+  color: #1a2133;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 111, 97, 0.18), transparent 30%),
+    radial-gradient(circle at 85% 0%, rgba(249, 168, 38, 0.2), transparent 28%),
+    linear-gradient(180deg, #f3f6ff 0%, #eef3ff 100%);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+body.theme-dark {
+  color: #dbe7ff;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(88, 127, 204, 0.3), transparent 30%),
+    radial-gradient(circle at 90% 0%, rgba(33, 75, 152, 0.35), transparent 30%),
+    linear-gradient(180deg, #0c1a35 0%, #091226 100%);
+}
+
+h1 {
+  margin: 0;
 }

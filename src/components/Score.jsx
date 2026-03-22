@@ -1,10 +1,15 @@
 import React from 'react'
 
-function Score(match) {
+function Score({ score }) {
+  const inning = score?.inning || 'Inning'
+  const runs = score?.r ?? '-'
+  const wickets = score?.w ?? '-'
+  const overs = score?.o ?? '-'
+
   return (
-    <div>
-      <div className='font-semibold'>{match.score.inning}</div>
-      <div className='flex justify-center'>{match.score.r}/{match.score.w}/({match.score.o})</div>
+    <div className='score-row'>
+      <div className='score-inning'>{inning}</div>
+      <div className='score-value'>{runs}/{wickets} ({overs})</div>
     </div>
   )
 }

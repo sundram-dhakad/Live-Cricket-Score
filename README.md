@@ -1,12 +1,43 @@
-# React + Vite
+# Cricket Score App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Live cricket match dashboard built with React + Vite. The app fetches current match data from CricAPI and renders responsive score cards.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies:
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Create a local env file from the sample:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell, use:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+3. Add your CricAPI key in `.env`:
+
+```env
+VITE_CRICAPI_KEY=your_cricapi_key_here
+```
+
+## Scripts
+
+- `npm run dev`: Start local development server.
+- `npm run build`: Build for production.
+- `npm run preview`: Preview production build.
+- `npm run lint`: Run ESLint checks.
+
+## Current Improvements
+
+- Loading, empty, and error UI states for API fetches.
+- Retry action for failed requests.
+- Safer rendering when score data is partially missing.
+- Cleaner component structure and styling with responsive layout.

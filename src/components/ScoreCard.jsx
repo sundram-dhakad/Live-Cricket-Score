@@ -1,28 +1,31 @@
 import React from 'react'
 import Score from './Score';
 
-function ScoreCard(props) {
-  const match = props;
+function ScoreCard({ name, status, date, teams, score }) {
+  const safeScores = Array.isArray(score) ? score : []
+  const teamsLabel = Array.isArray(teams) && teams.length > 0 ? teams.join(' vs ') : 'Teams not available'
+
   return (
-    <div className='card text-black bg-white border border-gray-400 shadow-black shadow-2xl rounded w-100 mb-5 mt-5 hover:scale-110'>
-      <div className='p-1'>
-        <div className='text-gray-500'>{match.date}</div>
-        <div className='flex items-center justify-center mt-1 font-semibold'>{match.name}</div>
+    <article className='score-card'>
+      <div className='score-card-header'>
+        <div className='score-date'>{date || 'Date unavailable'}</div>
+        <div className='score-match-name'>{name || 'Match name unavailable'}</div>
+        <div className='score-teams'>{teamsLabel}</div>
       </div>
 
-      <div className="info">
-        <div className='flex justify-between p-3'>
-          {
-            match.score.map(function(sc,idx){
-              return <div key={idx}>
-                <Score score={sc}/>
-              </div>
-            })
-          }
+      <div className='score-card-body'>
+        <div className='score-list'>
+          {safeScores.length > 0 ? (
+            safeScores.map((sc, idx) => (
+              <Score key={`${sc?.inning || 'inning'}-${idx}`} score={sc} />
+            ))
+          ) : (
+            <div className='score-row'>Score unavailable</div>
+          )}
         </div>
-        <div className='flex justify-center pb-2 text-blue-800'>{match.status}</div>
+        <div className='score-status'>{status || 'Status unavailable'}</div>
       </div> 
-    </div>
+    </article>
   )
 }
 

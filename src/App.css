@@ -1,0 +1,237 @@
+.app-shell {
+	min-height: 100vh;
+	padding-bottom: 1.5rem;
+	transition: color 0.2s ease;
+}
+
+.app-header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	position: relative;
+	padding: 1rem;
+	margin-bottom: 1.5rem;
+	background: linear-gradient(90deg, #ff6f61, #f9a826);
+	color: #ffffff;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.app-title {
+	font-weight: 700;
+	font-size: clamp(1.2rem, 3vw, 1.85rem);
+	letter-spacing: 0.03em;
+}
+
+.theme-toggle {
+	position: absolute;
+	right: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.2);
+	color: #ffffff;
+	font-weight: 700;
+	padding: 0.45rem 0.8rem;
+	border-radius: 0.65rem;
+	cursor: pointer;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+	background: rgba(255, 255, 255, 0.3);
+	border-color: rgba(255, 255, 255, 0.6);
+}
+
+.match-grid {
+	width: min(1200px, 92%);
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+	gap: 1rem;
+}
+
+.status-card {
+	width: min(700px, 92%);
+	margin: 0.5rem auto;
+	padding: 1rem;
+	border-radius: 0.75rem;
+	border: 1px solid #c9d0e6;
+	background-color: #ffffff;
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+	text-align: center;
+}
+
+.status-error {
+	border-color: #ffb4b4;
+	background-color: #fff5f5;
+}
+
+.retry-button {
+	margin-top: 0.75rem;
+	border: 0;
+	border-radius: 999px;
+	padding: 0.5rem 1rem;
+	font-weight: 700;
+	color: #ffffff;
+	background: #ff6f61;
+	cursor: pointer;
+}
+
+.retry-button:hover {
+	background: #e4584a;
+}
+
+.score-card {
+	background-color: #ffffff;
+	border: 1px solid #d2d9e8;
+	border-radius: 0.85rem;
+	box-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.score-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 14px 24px rgba(0, 0, 0, 0.14);
+}
+
+.score-card-header {
+	padding: 0.9rem 1rem 0.5rem;
+	border-bottom: 1px solid #e8ecf5;
+}
+
+.score-date {
+	color: #606f89;
+	font-size: 0.82rem;
+}
+
+.score-match-name {
+	margin-top: 0.25rem;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.score-teams {
+	margin-top: 0.3rem;
+	font-size: 0.88rem;
+	color: #404f6b;
+}
+
+.score-card-body {
+	padding: 0.85rem 1rem 1rem;
+}
+
+.score-list {
+	display: grid;
+	gap: 0.65rem;
+}
+
+.score-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem 0.65rem;
+	border: 1px solid #e9edf8;
+	border-radius: 0.55rem;
+	background-color: #f8faff;
+}
+
+.score-inning {
+	font-weight: 600;
+}
+
+.score-value {
+	font-weight: 700;
+	color: #23375f;
+}
+
+.score-status {
+	margin-top: 0.75rem;
+	text-align: center;
+	font-weight: 600;
+	color: #18428a;
+}
+
+.theme-dark {
+	color: #dbe7ff;
+}
+
+.theme-dark .app-header {
+	background: linear-gradient(90deg, #1f3f76, #0f2348);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.theme-dark .theme-toggle {
+	background: rgba(11, 19, 41, 0.55);
+	border-color: rgba(187, 213, 255, 0.45);
+	color: #e8f1ff;
+}
+
+.theme-dark .theme-toggle:hover {
+	background: rgba(12, 26, 58, 0.78);
+	border-color: rgba(187, 213, 255, 0.65);
+}
+
+.theme-dark .status-card {
+	border-color: #2e4571;
+	background-color: #152746;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+	color: #dbe7ff;
+}
+
+.theme-dark .status-error {
+	border-color: #7f3d4c;
+	background-color: #3b1d28;
+	color: #ffd8df;
+}
+
+.theme-dark .retry-button {
+	background: #4f91ff;
+	color: #0e1d36;
+}
+
+.theme-dark .retry-button:hover {
+	background: #75aaff;
+}
+
+.theme-dark .score-card {
+	background-color: #132443;
+	border-color: #314a77;
+	box-shadow: 0 14px 24px rgba(0, 0, 0, 0.34);
+}
+
+.theme-dark .score-card-header {
+	border-bottom-color: #2d436b;
+}
+
+.theme-dark .score-date {
+	color: #a6bddf;
+}
+
+.theme-dark .score-teams {
+	color: #c6d7f5;
+}
+
+.theme-dark .score-row {
+	border-color: #365487;
+	background-color: #1b315a;
+}
+
+.theme-dark .score-value {
+	color: #8cb7ff;
+}
+
+.theme-dark .score-status {
+	color: #8cb7ff;
+}
+
+@media (max-width: 640px) {
+	.app-header {
+		padding-right: 3.8rem;
+	}
+
+	.theme-toggle {
+		right: 0.75rem;
+	}
+}
