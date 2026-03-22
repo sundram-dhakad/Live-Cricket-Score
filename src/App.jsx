@@ -10,6 +10,25 @@ const API_KEY = import.meta.env.VITE_CRICAPI_KEY || FALLBACK_API_KEY
 const THEME_STORAGE_KEY = 'cricket-score-theme'
 const REFRESH_INTERVAL_MS = 60000
 
+const getApiErrorMessage = (error, payload) => {
+  const reason = payload?.reason || payload?.message || ''
+
+  if (/hits today exceeded hits limit|credits/i.test(reason)) {
+    return 'CricAPI quota exceeded for this key. Add your own VITE_CRICAPI_KEY in .env and restart the app.'
+  }
+
+  if (reason) {
+    return `Unable to fetch live scores: ${reason}`
+  }
+
+  const axiosMessage = error?.response?.data?.reason || error?.message
+  if (axiosMessage) {
+    return `Unable to fetch live scores: ${axiosMessage}`
+  }
+
+  return 'Unable to fetch live scores right now. Please try again.'
+}
+
 function App() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -50,14 +69,19 @@ function App() {
         timeout: 10000,
       })
 
-      const matches = response?.data?.data
+      const payload = response?.data
+      if (payload?.status === 'failure') {
+        throw new Error(getApiErrorMessage(null, payload))
+      }
+
+      const matches = payload?.data
       if (!Array.isArray(matches)) {
         throw new Error('Invalid response from score API')
       }
 
       setData(normalizeMatches(matches))
-    } catch {
-      setError('Unable to fetch live scores right now. Please try again.')
+    } catch (error) {
+      setError(getApiErrorMessage(error, error?.response?.data))
       if (!silent) {
         setData([])
       }
@@ -111,7 +135,14 @@ function App() {
   return (
     <div className={`app-shell ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
       <div className='app-header'>
-        <h1 className='app-title'>Live Cricket Score</h1>
+        <div className='app-brand'>
+          <img
+            className='app-logo'
+            src='/Rohit%20Sharma%20Logo.png'
+            alt='Cric45 logo'
+          />
+          <h1 className='app-title'>Cric45</h1>
+        </div>
         <div className='header-actions'>
           <button
             type='button'
@@ -120,7 +151,10 @@ function App() {
             aria-label={showSearchFilters ? 'Hide search filters' : 'Show search filters'}
             title={showSearchFilters ? 'Hide search filters' : 'Show search filters'}
           >
-            <span className='search-toggle-icon' aria-hidden='true'>⌕</span>
+            <svg className='search-toggle-icon' aria-hidden='true' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+              <circle cx='11' cy='11' r='8'></circle>
+              <path d='m21 21-4.35-4.35'></path>
+            </svg>
             <span className='search-toggle-text'>Search</span>
           </button>
           <button
