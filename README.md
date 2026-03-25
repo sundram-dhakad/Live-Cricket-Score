@@ -1,6 +1,6 @@
 # Live Cricket Score App
 
-[Live Link : Cric45](https://cric45.netlify.app/)
+[Live Link : Cric45](https://cric45.vercel.app/)
 
 Live cricket match dashboard built with React + Vite. The app fetches current match data from CricAPI and renders responsive score cards.
 
